@@ -10,7 +10,6 @@ struct Person {
     age: usize,
 }
 
-// I AM NOT DONE
 // Steps:
 // 1. If the length of the provided string is 0, then return an error
 // 2. Split the given string on the commas present in it
@@ -20,9 +19,29 @@ struct Person {
 //    with something like `"4".parse::<usize>()`.
 // If while parsing the age, something goes wrong, then return an error
 // Otherwise, then return a Result of a Person object
+use std::error;
+
+fn parse_it(s: &str) -> Result<Person, Box<dyn error::Error>>  {
+    let mut s = s.split(",");
+    let name = match s.next() {
+        None => return Err("Invalid Name".into()),
+        Some("") => return Err("Empty Name".into()),
+        Some(s) => s,
+    };
+    let age = match s.next() {
+        None => return Err("Invalid age".into()),
+        Some(s) => s.parse()?,
+    };
+    Ok(Person{name: name.into(), age: age})
+}
+
 impl FromStr for Person {
     type Err = String;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        match parse_it(s) {
+            Ok(p) => Ok(p),
+            Err(_) => Err("No good".into())
+        }
     }
 }
 
