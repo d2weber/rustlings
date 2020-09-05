@@ -18,7 +18,6 @@ impl Default for Person {
     }
 }
 
-// I AM NOT DONE
 // Your task is to complete this implementation
 // in order for the line `let p = Person::from("Mark,20")` to compile
 // Please note that you'll need to parse the age component into a `usize`
@@ -33,8 +32,28 @@ impl Default for Person {
 // 5. Extract the other element from the split operation and parse it into a `usize` as the age
 // If while parsing the age, something goes wrong, then return the default of Person
 // Otherwise, then return an instantiated Person object with the results
+use std::error;
+
+fn parse_it(s: &str) -> Result<Person, Box<dyn error::Error>>  {
+    let mut s = s.split(",");
+    let name = match s.next() {
+        None => return Err("Invalid Name".into()),
+        Some("") => return Err("Empty Name".into()),
+        Some(s) => s,
+    };
+    let age = match s.next() {
+        None => return Err("Invalid age".into()),
+        Some(s) => s.parse()?,
+    };
+    Ok(Person{name: name.into(), age: age})
+}
+
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        match parse_it(s) {
+            Ok(p) => p,
+            Err(_) => Person::default()
+        }
     }
 }
 
